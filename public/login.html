@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Olimpiadas Matemáticas</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <h1>🏆 Olimpiadas Matemáticas</h1>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('login')">Iniciar Sesión</button>
+                <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+            </div>
+            
+            <div id="login-form" class="auth-form active">
+                <h2>Bienvenido</h2>
+                <input type="text" id="login-username" placeholder="Usuario" autocomplete="username">
+                <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password">
+                <button onclick="login()">Ingresar</button>
+                <div id="login-error" class="error-message"></div>
+            </div>
+            
+            <div id="register-form" class="auth-form">
+                <h2>Crear Cuenta</h2>
+                <input type="text" id="register-username" placeholder="Usuario">
+                <input type="password" id="register-password" placeholder="Contraseña">
+                <input type="password" id="register-confirm" placeholder="Confirmar Contraseña">
+                <button onclick="register()">Registrarse</button>
+                <div id="register-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/login.js"></script>
+</body>
+</html>

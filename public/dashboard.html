@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Olimpiadas Matemáticas 3D</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .navbar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .score, .level { padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+        .score { background: #48bb78; }
+        .level { background: #ed8936; }
+        .logout { padding: 5px 15px; background: #e53e3e; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .card h2 { margin-bottom: 20px; color: #667eea; }
+        .ranking-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .create-section { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .create-section input, .create-section select {
+            padding: 10px; border: none; border-radius: 8px; flex: 1;
+            background: rgba(255,255,255,0.2); color: white;
+        }
+        .create-section input::placeholder { color: rgba(255,255,255,0.7); }
+        .create-section button {
+            padding: 10px 20px; background: #667eea; color: white;
+            border: none; border-radius: 8px; cursor: pointer;
+        }
+        .room-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        .join-btn { padding: 8px 20px; background: #48bb78; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .join-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.7); }
+        .notification {
+            position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+            border-radius: 8px; color: white; font-weight: bold;
+            z-index: 1000; animation: slideIn 0.3s ease;
+        }
+        .success { background: #48bb78; }
+        .error { background: #f56565; }
+        .status { font-size: 12px; padding: 4px 8px; border-radius: 12px; background: #48bb78; color: white; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .create-section { flex-direction: column; } }
+        .feature-badge {
+            display: inline-block;
+            background: #667eea;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">🏆 Olimpiadas Matemáticas <span class="feature-badge">3D + Voz IA</span></div>
+            <div class="user-info">
+                <span id="username"></span>
+                <span class="score" id="score">0 pts</span>
+                <span class="level" id="level">Nivel 1</span>
+                <span id="status" class="status">🟢 Conectado</span>
+                <button class="logout" onclick="logout()">Salir</button>
+            </div>
+        </nav>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>🏅 Ranking Global</h2>
+                <div id="ranking"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🎮 Crear Sala</h2>
+                <div class="create-section">
+                    <input type="text" id="roomName" placeholder="Nombre de la sala">
+                    <select id="categorySelect">
+                        <option value="">📚 Todas las categorías</option>
+                        <option value="matematica_basica">🔢 Matemática Básica</option>
+                        <option value="algebra">✖️ Álgebra</option>
+                        <option value="geometria">🎨 Geometría 3D</option>
+                        <option value="calculo">📈 Cálculo</option>
+                        <option value="matematica_discreta">🎯 Matemática Discreta</option>
+                        <option value="razonamiento_cuantitativo">🧠 Razonamiento Cuantitativo</option>
+                    </select>
+                    <select id="maxPlayers">
+                        <option value="2">2 jugadores</option>
+                        <option value="4" selected>4 jugadores</option>
+                        <option value="6">6 jugadores</option>
+                    </select>
+                    <button onclick="createRoom()">➕ Crear Sala con IA</button>
+                </div>
+                <h2>🎮 Salas Disponibles</h2>
+                <div id="rooms"></div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Mis Estadísticas</h2>
+                <div id="stats"></div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(102,126,234,0.3); border-radius: 10px;">
+                    <h3>✨ Nuevas Características</h3>
+                    <p>🎨 <strong>Geometría 3D</strong> - Visualiza figuras en 3D interactivas</p>
+                    <p>🎤 <strong>Asistente de Voz con IA</strong> - Respuestas motivadoras personalizadas</p>
+                    <p>🤖 <strong>Preguntas dinámicas</strong> - Cada respuesta genera una pregunta nueva</p>
+                    <p>📚 <strong>Explicaciones al final</strong> - Resumen completo de aprendizaje</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let socket = null;
+        let user = null;
+        
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/';
+        
+        try {
+            user = JSON.parse(localStorage.getItem('user'));
+            document.getElementById('username').textContent = user.username;
+            document.getElementById('score').textContent = user.score + ' pts';
+            document.getElementById('level').textContent = 'Nivel ' + user.level;
+            document.getElementById('stats').innerHTML = `
+                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">🎮 Partidas: ${user.gamesPlayed || 0}</div>
+                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">🏆 Puntaje Total: ${user.score || 0}</div>
+                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">⭐ Nivel: ${user.level || 1}</div>
+            `;
+        } catch(e) { window.location.href = '/'; }
+        
+        function connect() {
+            socket = io({
+                auth: { token },
+                transports: ['websocket', 'polling'],
+                reconnection: true
+            });
+            
+            socket.on('connect', () => {
+                document.getElementById('status').textContent = '🟢 Conectado';
+                document.getElementById('status').style.background = '#48bb78';
+                socket.emit('get_rooms');
+            });
+            
+            socket.on('disconnect', () => {
+                document.getElementById('status').textContent = '🔴 Desconectado';
+                document.getElementById('status').style.background = '#f56565';
+            });
+            
+            socket.on('leaderboard_update', (data) => {
+                const container = document.getElementById('ranking');
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="empty">🏆 Sin puntuaciones</div>';
+                    return;
+                }
+                container.innerHTML = data.map((u, i) => `
+                    <div class="ranking-item">
+                        <span>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i+1}</span>
+                        <span>${u.username}</span>
+                        <span style="color:#48bb78;">${u.score} pts</span>
+                    </div>
+                `).join('');
+            });
+            
+            socket.on('room_list_update', (rooms) => {
+                const container = document.getElementById('rooms');
+                if (!rooms || rooms.length === 0) {
+                    container.innerHTML = '<div class="empty">🎮 No hay salas. ¡Crea una!</div>';
+                    return;
+                }
+                container.innerHTML = rooms.map(room => `
+                    <div class="room-item">
+                        <div>
+                            <strong>🏠 ${room.name}</strong>
+                            ${room.category === 'geometria' ? '<span style="background:#667eea; padding:2px 6px; border-radius:10px; font-size:10px; margin-left:8px;">🎨 3D</span>' : ''}
+                            <br><small>👥 ${room.players}/${room.maxPlayers}</small>
+                        </div>
+                        <button class="join-btn" onclick="joinRoom('${room.id}')" ${room.players >= room.maxPlayers ? 'disabled' : ''}>
+                            ${room.players >= room.maxPlayers ? 'Llena' : 'Unirse'}
+                        </button>
+                    </div>
+                `).join('');
+            });
+            
+            socket.on('room_created', (data) => {
+                showNotification('✅ Sala creada!', 'success');
+                window.location.href = `/game.html?roomId=${data.roomId}`;
+            });
+            
+            socket.on('room_joined', (data) => {
+                showNotification('✅ Unido a la sala!', 'success');
+                window.location.href = `/game.html?roomId=${data.roomId}`;
+            });
+            
+            socket.on('error', (data) => showNotification(data.message, 'error'));
+        }
+        
+        function createRoom() {
+            const name = document.getElementById('roomName').value.trim();
+            const category = document.getElementById('categorySelect').value;
+            if (!name) {
+                showNotification('❌ Ingresa un nombre', 'error');
+                return;
+            }
+            showNotification('🤖 Generando preguntas con IA...', 'success');
+            socket.emit('create_room', {
+                name: name,
+                maxPlayers: parseInt(document.getElementById('maxPlayers').value),
+                category: category || null
+            });
+        }
+        
+        function joinRoom(roomId) { socket.emit('join_room', { roomId }); }
+        function logout() { if (socket) socket.disconnect(); localStorage.clear(); window.location.href = '/'; }
+        function showNotification(msg, type) {
+            const div = document.createElement('div');
+            div.className = `notification ${type}`;
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+        
+        connect();
+    </script>
+</body>
+</html>
