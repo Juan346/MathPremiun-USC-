@@ -40,15 +40,15 @@ const MODEL_NAME = 'gemini-2.5-flash';
 const rewardsCatalog = [
   { 
     id: 1, 
-    name: " Bananas", 
+    name: "🍭 Bananas", 
     description: "Gana uno de nuestros deliciosos premios comestibles, acercate y pregunta por nuestras opciones disponibles. ¡Un premio delicioso te espera!",
     pointsRequired: 500,
-    icon: "🍕",
+    icon: "🍬​",
     iconBg: "#FF6B35",
     color: "#FF6B35",
     realValue: "$ -",
     code: "FOOD_1000",
-    image: "🍔🍕🌮"
+    image: "🍬🍭"
   },
   { 
     id: 2, 
