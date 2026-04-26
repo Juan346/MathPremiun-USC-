@@ -10,9 +10,140 @@
     "totalAnswers": 0,
     "createdAt": "2026-03-30T15:09:48.752Z"
   },
+    {
+    "id": "d098e767-7e98-46cc-b8c4-eae35acd68f14",
+    "username": "Juanx",
+    "password": "hola123",
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:09:48.752Z"
+  },
+    {
+    "id": "d098e767-7e98-46cc-b8c4-eae35acd68f1i",
+    "username": "Juanz",
+    "password": "hola123",
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:09:48.752Z"
+  },
+    {
+    "id": "d098e767-7e98-46cc-b8c4-eae35acd68f1a",
+    "username": "Juante",
+    "password": "hola123",
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:09:48.752Z"
+  },
+    {
+    "id": "d098e767-7e98-46cc-b8c4-eae35acd68f13",
+    "username": "Juane",
+    "password": "hola123",
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:09:48.752Z"
+  },
+    {
+    "id": "d098e767-7e98-46cc-b8c4-eae35acd68f12",
+    "username": "Juans",
+    "password": "hola123",
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:09:48.752Z"
+  },
   {
     "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf042e",
     "username": "Bized",
+    "password": "hola123",
+    "score": 250,
+    "level": 1,
+    "gamesPlayed": 15,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:25:21.158Z",
+    "redeemedRewards": [
+      {
+        "rewardId": 1,
+        "rewardName": "🍕 Comida",
+        "date": "2026-04-24T18:52:00.420Z",
+        "code": "FOOD_1000_c8e4_1777056720420"
+      }
+    ]
+  },
+  {
+    "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf042e",
+    "username": "Bized",
+    "password": "hola123",
+    "score": 250,
+    "level": 1,
+    "gamesPlayed": 15,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:25:21.158Z",
+    "redeemedRewards": [
+      {
+        "rewardId": 1,
+        "rewardName": "🍕 Comida",
+        "date": "2026-04-24T18:52:00.420Z",
+        "code": "FOOD_1000_c8e4_1777056720420"
+      }
+    ]
+  },
+  {
+    "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf0c42e",
+    "username": "Bizeiod",
+    "password": "hola123",
+    "score": 250,
+    "level": 1,
+    "gamesPlayed": 15,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:25:21.158Z",
+    "redeemedRewards": [
+      {
+        "rewardId": 1,
+        "rewardName": "🍕 Comida",
+        "date": "2026-04-24T18:52:00.420Z",
+        "code": "FOOD_1000_c8e4_1777056720420"
+      }
+    ]
+  },
+  {
+    "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf04a2e",
+    "username": "Bizeda",
+    "password": "hola123",
+    "score": 250,
+    "level": 1,
+    "gamesPlayed": 15,
+    "correctAnswers": 0,
+    "totalAnswers": 0,
+    "createdAt": "2026-03-30T15:25:21.158Z",
+    "redeemedRewards": [
+      {
+        "rewardId": 1,
+        "rewardName": "🍕 Comida",
+        "date": "2026-04-24T18:52:00.420Z",
+        "code": "FOOD_1000_c8e4_1777056720420"
+      }
+    ]
+  },
+  {
+    "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf042se",
+    "username": "Bizeds",
     "password": "hola123",
     "score": 250,
     "level": 1,

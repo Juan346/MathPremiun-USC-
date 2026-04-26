@@ -41,7 +41,97 @@
             padding: 20px;
         }
         .card h2 { margin-bottom: 20px; color: #667eea; border-left: 3px solid #667eea; padding-left: 10px; }
-        .ranking-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        
+        /* ============ RANKING CON SCROLL ============ */
+        .ranking-container {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea rgba(255,255,255,0.2);
+        }
+        
+        .ranking-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .ranking-container::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .ranking-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        
+        .ranking-container::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-item:hover {
+            background: rgba(102,126,234,0.2);
+            transform: translateX(5px);
+        }
+        
+        .ranking-rank {
+            font-weight: bold;
+            min-width: 50px;
+            font-size: 1.1em;
+        }
+        
+        .ranking-name {
+            flex: 1;
+            margin: 0 10px;
+            font-weight: 500;
+        }
+        
+        .ranking-score {
+            font-weight: bold;
+            color: #48bb78;
+            font-size: 1.1em;
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        .ranking-item.top-1 {
+            background: linear-gradient(90deg, rgba(255,215,0,0.2), transparent);
+            border-left: 3px solid #FFD700;
+        }
+        
+        .ranking-item.top-2 {
+            background: linear-gradient(90deg, rgba(192,192,192,0.2), transparent);
+            border-left: 3px solid #C0C0C0;
+        }
+        
+        .ranking-item.top-3 {
+            background: linear-gradient(90deg, rgba(205,127,50,0.2), transparent);
+            border-left: 3px solid #CD7F32;
+        }
+        
+        .ranking-current-user {
+            background: rgba(102,126,234,0.3);
+            border-left: 3px solid #667eea;
+            font-weight: bold;
+        }
+        
+        .ranking-empty {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        /* Fin estilos ranking */
+        
         .create-section { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .create-section input, .create-section select {
             padding: 10px; border: none; border-radius: 8px; flex: 1;
@@ -53,25 +143,43 @@
             border: none; border-radius: 8px; cursor: pointer;
         }
         .room-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px; margin: 10px 0; background: rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.1);
             border-radius: 10px;
+            transition: all 0.3s ease;
         }
-        .join-btn { padding: 8px 20px; background: #48bb78; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .join-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .room-item:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+        .join-btn { padding: 8px 20px; background: #48bb78; color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .join-btn:hover { background: #38a169; transform: scale(1.02); }
+        .join-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.7); }
         .notification {
-            position: fixed; top: 20px; right: 20px; padding: 12px 20px;
-            border-radius: 8px; color: white; font-weight: bold;
-            z-index: 1000; animation: slideIn 0.3s ease;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .success { background: #48bb78; }
         .error { background: #f56565; }
+        .info { background: #4299e1; }
         .status { font-size: 12px; padding: 4px 8px; border-radius: 12px; background: #48bb78; color: white; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .create-section { flex-direction: column; } }
         
-        /* Carrusel de Premios - Ocupa todo el espacio */
+        /* Carrusel de Premios */
         .rewards-section {
             grid-column: span 1;
             background: rgba(0,0,0,0.3);
@@ -104,6 +212,7 @@
             border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.3s;
             cursor: pointer;
+            position: relative;
         }
         .reward-carousel-card:hover {
             transform: translateY(-10px);
@@ -113,45 +222,13 @@
             opacity: 0.6;
             filter: grayscale(0.3);
         }
-        .reward-icon-large {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        .reward-name-large {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .reward-points-large {
-            font-size: 20px;
-            font-weight: bold;
-            color: #fbbf24;
-            margin-bottom: 10px;
-        }
-        .reward-description-large {
-            font-size: 14px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 15px;
-        }
-        .reward-value-large {
-            font-size: 16px;
-            color: #48bb78;
-            margin-bottom: 20px;
-        }
-        .reward-progress {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-        .reward-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #48bb78);
-            border-radius: 10px;
-            transition: width 0.5s;
-        }
+        .reward-icon-large { font-size: 80px; margin-bottom: 20px; }
+        .reward-name-large { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .reward-points-large { font-size: 20px; font-weight: bold; color: #fbbf24; margin-bottom: 10px; }
+        .reward-description-large { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 15px; }
+        .reward-value-large { font-size: 16px; color: #48bb78; margin-bottom: 20px; }
+        .reward-progress { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .reward-progress-bar { height: 100%; background: linear-gradient(90deg, #667eea, #48bb78); border-radius: 10px; transition: width 0.5s; }
         .redeem-carousel-btn {
             width: 100%;
             padding: 12px;
@@ -164,14 +241,8 @@
             font-weight: bold;
             transition: all 0.3s;
         }
-        .redeem-carousel-btn:hover:not(:disabled) {
-            background: #5a67d8;
-            transform: scale(1.02);
-        }
-        .redeem-carousel-btn:disabled {
-            background: #4a5568;
-            cursor: not-allowed;
-        }
+        .redeem-carousel-btn:hover:not(:disabled) { background: #5a67d8; transform: scale(1.02); }
+        .redeem-carousel-btn:disabled { background: #4a5568; cursor: not-allowed; }
         .carousel-btn {
             position: absolute;
             top: 50%;
@@ -187,10 +258,7 @@
             transition: all 0.3s;
             z-index: 10;
         }
-        .carousel-btn:hover {
-            background: #667eea;
-            transform: translateY(-50%) scale(1.1);
-        }
+        .carousel-btn:hover { background: #667eea; transform: translateY(-50%) scale(1.1); }
         .carousel-btn.prev { left: 10px; }
         .carousel-btn.next { right: 10px; }
         
@@ -270,22 +338,23 @@
                 <span id="username"></span>
                 <span class="score" id="score">0 pts</span>
                 <span class="level" id="level">Nivel 1</span>
-       
                 <button class="logout" onclick="logout()">Salir</button>
             </div>
         </nav>
         
         <div class="grid">
             <div class="card">
-                <h2>🏅 Ranking Global</h2>
-                <div id="ranking"></div>
+                <h2>🏅 Ranking Global <span style="font-size:12px; color:#a0aec0;">(Top 10 + scroll)</span></h2>
+                <div class="ranking-container" id="rankingContainer">
+                    <div id="ranking"></div>
+                </div>
             </div>
             
             <div class="card">
                 <h2>🎮 Crear Sala</h2>
                 <div class="create-section">
                     <input type="text" id="roomName" placeholder="Nombre de la sala">
-                    <select id="categorySelect" style="background-color: #1a1a2e;>
+                    <select id="categorySelect" style="background-color: #1a1a2e;">
                         <option value="">📚 Todas las categorías</option>
                         <option value="matematica_basica">🔢 Matemática Básica</option>
                         <option value="algebra">✖️ Álgebra</option>
@@ -295,8 +364,8 @@
                         <option value="razonamiento_cuantitativo">🧠 Razonamiento Cuantitativo</option>
                     </select>
                     <select id="maxPlayers" style="background-color: #1a1a2e;">
-                        <option value="2" selected>2 jugadores</option>
-                        <option value="4" >4 jugadores</option>
+                        <option value="2">2 jugadores</option>
+                        <option value="4" selected>4 jugadores</option>
                         <option value="6">6 jugadores</option>
                     </select>
                     <button onclick="createRoom()">➕ Crear Sala</button>
@@ -306,14 +375,12 @@
             </div>
         </div>
         
-        <!-- Sección de Premios con Carrusel - Ocupa todo el ancho -->
+        <!-- Sección de Premios con Carrusel -->
         <div class="rewards-section">
             <h2>🎁 Canjea tus Puntos por Premios Reales 🎁</h2>
             <div class="carousel-container">
                 <button class="carousel-btn prev" onclick="prevSlide()">❮</button>
-                <div class="carousel-track" id="carouselTrack">
-                    <!-- Los premios se cargarán dinámicamente -->
-                </div>
+                <div class="carousel-track" id="carouselTrack"></div>
                 <button class="carousel-btn next" onclick="nextSlide()">❯</button>
             </div>
             <div class="dots-container" id="dotsContainer"></div>
@@ -520,16 +587,37 @@
             socket.on('leaderboard_update', (data) => {
                 const container = document.getElementById('ranking');
                 if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty">🏆 Sin puntuaciones</div>';
+                    container.innerHTML = '<div class="ranking-empty">🏆 Sin puntuaciones</div>';
                     return;
                 }
-                container.innerHTML = data.map((u, i) => `
-                    <div class="ranking-item">
-                        <span>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i+1}</span>
-                        <span>${u.username} ${u.username === user.username ? '(tú)' : ''}</span>
-                        <span style="color:#48bb78;">${u.score} pts</span>
-                    </div>
-                `).join('');
+                
+                // Mostrar hasta 10 jugadores con estilo mejorado
+                container.innerHTML = data.map((u, i) => {
+                    let rankIcon = '';
+                    let rankClass = '';
+                    if (i === 0) {
+                        rankIcon = '🥇';
+                        rankClass = 'top-1';
+                    } else if (i === 1) {
+                        rankIcon = '🥈';
+                        rankClass = 'top-2';
+                    } else if (i === 2) {
+                        rankIcon = '🥉';
+                        rankClass = 'top-3';
+                    } else {
+                        rankIcon = `${i + 1}`;
+                    }
+                    
+                    const isCurrentUser = u.username === user.username;
+                    
+                    return `
+                        <div class="ranking-item ${rankClass} ${isCurrentUser ? 'ranking-current-user' : ''}">
+                            <div class="ranking-rank">${rankIcon}</div>
+                            <div class="ranking-name">${u.username} ${isCurrentUser ? '<span style="font-size:10px; color:#667eea;">(tú)</span>' : ''}</div>
+                            <div class="ranking-score">${u.score} pts</div>
+                        </div>
+                    `;
+                }).join('');
             });
             
             socket.on('room_list_update', (rooms) => {
