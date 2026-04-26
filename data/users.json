@@ -3,9 +3,9 @@
     "id": "d098e767-7e98-46cc-b8c4-eae35acd68f1",
     "username": "Juan",
     "password": "hola123",
-    "score": 440,
-    "level": 3,
-    "gamesPlayed": 3,
+    "score": 770,
+    "level": 1,
+    "gamesPlayed": 6,
     "correctAnswers": 0,
     "totalAnswers": 0,
     "createdAt": "2026-03-30T15:09:48.752Z"
@@ -14,11 +14,28 @@
     "id": "c8e44ee1-940a-47c3-aaa9-7e56b2bf042e",
     "username": "Bized",
     "password": "hola123",
-    "score": 470,
-    "level": 3,
-    "gamesPlayed": 10,
+    "score": 250,
+    "level": 1,
+    "gamesPlayed": 15,
     "correctAnswers": 0,
     "totalAnswers": 0,
-    "createdAt": "2026-03-30T15:25:21.158Z"
+    "createdAt": "2026-03-30T15:25:21.158Z",
+    "redeemedRewards": [
+      {
+        "rewardId": 1,
+        "rewardName": "🍕 Comida",
+        "date": "2026-04-24T18:52:00.420Z",
+        "code": "FOOD_1000_c8e4_1777056720420"
+      }
+    ]
+  },
+  {
+    "id": "90eace95-6a17-442f-a92d-2ef3758140a9",
+    "username": "juan1",
+    "password": "hola123",
+    "score": 0,
+    "level": 1,
+    "gamesPlayed": 0,
+    "redeemedRewards": []
   }
 ]

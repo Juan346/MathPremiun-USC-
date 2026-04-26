@@ -176,21 +176,220 @@ function displayQuestion(data) {
     const container = document.getElementById('question-options');
     const questionText = document.getElementById('question-text');
     
+    // Función para formatear notación matemática (sin escape, para HTML seguro)
+    function formatMathToHTML(text) {
+        if (!text) return '';
+        
+        let formatted = text;
+        
+        // Primero, proteger el HTML existente temporalmente
+        let htmlProtected = [];
+        let protectCounter = 0;
+        
+        // Proteger etiquetas HTML existentes
+        formatted = formatted.replace(/<[^>]+>/g, (match) => {
+            const placeholder = `__HTML_PROTECT_${protectCounter}__`;
+            htmlProtected.push({ placeholder, html: match });
+            protectCounter++;
+            return placeholder;
+        });
+        
+        // Reemplazar símbolos matemáticos
+        formatted = formatted.replace(/\^2/g, '²');
+        formatted = formatted.replace(/\^3/g, '³');
+        formatted = formatted.replace(/\^4/g, '⁴');
+        formatted = formatted.replace(/\^5/g, '⁵');
+        formatted = formatted.replace(/\^6/g, '⁶');
+        formatted = formatted.replace(/\^7/g, '⁷');
+        formatted = formatted.replace(/\^8/g, '⁸');
+        formatted = formatted.replace(/\^9/g, '⁹');
+        formatted = formatted.replace(/([a-zA-Z])\^2/g, '$1²');
+        formatted = formatted.replace(/([a-zA-Z])\^3/g, '$1³');
+        formatted = formatted.replace(/\*/g, '×');
+        formatted = formatted.replace(/√/g, '√');
+        
+        // Restaurar HTML protegido
+        htmlProtected.forEach(({ placeholder, html }) => {
+            formatted = formatted.replace(placeholder, html);
+        });
+        
+        return formatted;
+    }
+    
+    // Función para escapar texto pero preservar HTML (para opciones)
+    function escapeHtmlPreserveMath(text) {
+        if (!text) return '';
+        
+        // Si ya contiene HTML de notación matemática, no escaparlo
+        if (text.includes('<span class="sqrt">') || text.includes('<span class="fraction">')) {
+            return text;
+        }
+        
+        // Escapar HTML normalmente
+        const div = document.createElement('div');
+        div.textContent = text;
+        let escaped = div.innerHTML;
+        
+        // Aplicar formato matemático al texto escapado
+        escaped = escaped.replace(/\^2/g, '²');
+        escaped = escaped.replace(/\^3/g, '³');
+        escaped = escaped.replace(/\^4/g, '⁴');
+        escaped = escaped.replace(/\*/g, '×');
+        escaped = escaped.replace(/√/g, '√');
+        
+        return escaped;
+    }
+    
+    // Obtener nombre de categoría
+    function getCategoryName(category) {
+        const categories = {
+            'matematica_basica': 'Matemática Básica',
+            'algebra': 'Álgebra',
+            'geometria': 'Geometría 3D',
+            'calculo': 'Cálculo',
+            'matematica_discreta': 'Matemática Discreta',
+            'razonamiento_cuantitativo': 'Razonamiento Cuantitativo'
+        };
+        return categories[category] || 'Matemáticas';
+    }
+    
+    // Obtener ícono según el tipo
+    function getTypeIcon(type) {
+        const icons = {
+            'suma': '➕', 'resta': '➖', 'multiplicacion': '✖️', 'division': '➗',
+            'fraccion': '🔢', 'porcentaje': '%', 'derivada': '📈', 'integral': '∫',
+            'conjuntos': '🎯', 'combinatoria': '🃏', 'ecuacion': '✖️', 'problema': '🧠',
+            'completar': '📝', 'puzzle': '🧩', 'geometria': '📐'
+        };
+        return icons[type] || '📝';
+    }
+    
+    // Mostrar categoría y tipo (esto es seguro, no tiene HTML)
+    const categoryBadge = `
+        <div class="category-badge">
+            📚 ${question.categoryName || getCategoryName(question.category)} | 
+            ${getTypeIcon(question.type)} ${question.type || 'matemáticas'}
+        </div>
+    `;
+    
+    // Formatear el texto de la pregunta - usar formato HTML directamente
+    let formattedQuestionText = question.text;
+    
+    // Si el texto NO contiene ya HTML de raíz cuadrada, formatearlo
+    if (!formattedQuestionText.includes('<span class="sqrt">')) {
+        // Convertir √64 o √(64) a HTML
+        formattedQuestionText = formattedQuestionText.replace(/√(\d+)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+        formattedQuestionText = formattedQuestionText.replace(/√\((\d+)\)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+        formattedQuestionText = formattedQuestionText.replace(/√([a-zA-Z])/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+        formattedQuestionText = formattedQuestionText.replace(/√\(([a-zA-Z])\)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+        
+        // Formato de potencias
+        formattedQuestionText = formattedQuestionText.replace(/\^2/g, '²');
+        formattedQuestionText = formattedQuestionText.replace(/\^3/g, '³');
+        formattedQuestionText = formattedQuestionText.replace(/([a-zA-Z0-9])\^2/g, '$1²');
+        formattedQuestionText = formattedQuestionText.replace(/([a-zA-Z0-9])\^3/g, '$1³');
+        
+        // Fracciones simples
+        formattedQuestionText = formattedQuestionText.replace(/(\d+)\/(\d+)/g, '<span class="fraction"><sup>$1</sup>/<sub>$2</sub></span>');
+    }
+    
+    questionText.innerHTML = `
+        ${categoryBadge}
+        <div class="question-content">${formattedQuestionText}</div>
+    `;
+    
+    // Generar opciones según tipo
+    if (question.type === 'completar' || question.type === 'problema' || !question.options || question.options.length === 0) {
+        container.innerHTML = `
+            <input type="text" id="text-answer" class="text-answer-input" placeholder="Escribe tu respuesta..." autocomplete="off">
+            <button onclick="submitAnswer()" class="submit-btn">Responder</button>
+        `;
+        
+        setTimeout(() => {
+            const input = document.getElementById('text-answer');
+            if (input) input.focus();
+        }, 100);
+    } else if (question.options && question.options.length > 0) {
+        // Mostrar opciones - aplicar formato matemático preservando HTML
+        const formattedOptions = question.options.map(opt => {
+            let formattedOpt = opt;
+            
+            // Formatear raíces cuadradas en opciones
+            if (!formattedOpt.includes('<span class="sqrt">')) {
+                formattedOpt = formattedOpt.replace(/√(\d+)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+                formattedOpt = formattedOpt.replace(/√\((\d+)\)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+                formattedOpt = formattedOpt.replace(/\^2/g, '²');
+                formattedOpt = formattedOpt.replace(/\^3/g, '³');
+                formattedOpt = formattedOpt.replace(/(\d+)\/(\d+)/g, '<span class="fraction"><sup>$1</sup>/<sub>$2</sub></span>');
+            }
+            
+            return formattedOpt;
+        });
+        
+        container.innerHTML = formattedOptions.map((opt, index) => `
+            <button class="option-btn" onclick="submitAnswer('${escapeHtml(question.options[index]).replace(/'/g, "\\'")}')">
+                ${opt}
+            </button>
+        `).join('');
+    }
+    
+    // Actualizar contador
+    const counterElement = document.getElementById('question-counter');
+    if (counterElement) {
+        counterElement.textContent = `Pregunta ${data.questionNumber}/${data.totalQuestions}`;
+    }
+}
+
+// Función auxiliar para escapar HTML (para valores, no para mostrar)
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+    
+    // Obtener nombre de categoría si es necesario
+    function getCategoryName(category) {
+        const categories = {
+            'matematica_basica': 'Matemática Básica',
+            'algebra': 'Álgebra',
+            'geometria': 'Geometría 3D',
+            'calculo': 'Cálculo',
+            'matematica_discreta': 'Matemática Discreta',
+            'razonamiento_cuantitativo': 'Razonamiento Cuantitativo'
+        };
+        return categories[category] || 'Matemáticas';
+    }
+    
+    // Obtener ícono según el tipo de pregunta
+    function getTypeIcon(type) {
+        const icons = {
+            'suma': '➕', 'resta': '➖', 'multiplicacion': '✖️', 'division': '➗',
+            'fraccion': '🔢', 'porcentaje': '%', 'derivada': '📈', 'integral': '∫',
+            'conjuntos': '🎯', 'combinatoria': '🃏', 'ecuacion': '✖️', 'problema': '🧠',
+            'completar': '📝', 'puzzle': '🧩', 'geometria': '📐'
+        };
+        return icons[type] || '📝';
+    }
+    
     // Mostrar categoría y tipo
     const categoryBadge = `
         <div class="category-badge">
             📚 ${question.categoryName || getCategoryName(question.category)} | 
-            ${getTypeIcon(question.type)} ${question.type}
+            ${getTypeIcon(question.type)} ${question.type || 'matemáticas'}
         </div>
     `;
     
+    // Formatear el texto de la pregunta con notación matemática
+    const formattedQuestionText = formatMath(question.text);
+    
     questionText.innerHTML = `
         ${categoryBadge}
-        <div class="question-content">${escapeHtml(question.text)}</div>
+        <div class="question-content">${formattedQuestionText}</div>
     `;
     
     // Generar opciones según tipo
-    if (question.type === 'completar' || question.type === 'problema' || !question.options) {
+    if (question.type === 'completar' || question.type === 'problema' || !question.options || question.options.length === 0) {
         container.innerHTML = `
             <input type="text" id="text-answer" class="text-answer-input" placeholder="Escribe tu respuesta..." autocomplete="off">
             <button onclick="submitAnswer()" class="submit-btn">Responder</button>
@@ -202,14 +401,29 @@ function displayQuestion(data) {
             if (input) input.focus();
         }, 100);
     } else if (question.options && question.options.length > 0) {
-        container.innerHTML = question.options.map(opt => `
-            <button class="option-btn" onclick="submitAnswer('${escapeHtml(opt).replace(/'/g, "\\'")}')">
-                ${escapeHtml(opt)}
+        // Formatear cada opción con notación matemática
+        const formattedOptions = question.options.map(opt => formatMath(opt));
+        
+        container.innerHTML = formattedOptions.map((opt, index) => `
+            <button class="option-btn" onclick="submitAnswer('${escapeHtml(question.options[index]).replace(/'/g, "\\'")}')">
+                ${opt}
             </button>
         `).join('');
     }
     
-    document.getElementById('question-counter').textContent = `Pregunta ${data.questionNumber}/${data.totalQuestions}`;
+    // Actualizar contador de preguntas
+    const counterElement = document.getElementById('question-counter');
+    if (counterElement) {
+        counterElement.textContent = `Pregunta ${data.questionNumber}/${data.totalQuestions}`;
+    }
+}
+
+// Función auxiliar para escapar HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Iniciar temporizador
@@ -277,6 +491,19 @@ function submitAnswer(answer = null) {
     canAnswer = false;
 }
 
+function formatMathForExplanation(text) {
+    if (!text) return '';
+    
+    let formatted = text;
+    formatted = formatted.replace(/\^2/g, '²');
+    formatted = formatted.replace(/\^3/g, '³');
+    formatted = formatted.replace(/\^4/g, '⁴');
+    formatted = formatted.replace(/\*/g, '×');
+    formatted = formatted.replace(/√\(([^)]+)\)/g, '√$1');
+    
+    return formatted;
+}
+
 // Mostrar feedback
 function showFeedback(message, type) {
     const feedbackDiv = document.getElementById('answer-feedback');
@@ -303,25 +530,31 @@ function showFeedback(message, type) {
 // En showExplanation
 function showExplanation(explanation, steps, hint, funFact) {
     const div = document.getElementById('feedbackArea');
+    
+    // Formatear explicación con notación matemática
+    let formattedExplanation = explanation;
+    formattedExplanation = formattedExplanation.replace(/√(\d+)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+    formattedExplanation = formattedExplanation.replace(/\^2/g, '²');
+    formattedExplanation = formattedExplanation.replace(/\^3/g, '³');
+    formattedExplanation = formattedExplanation.replace(/(\d+)\/(\d+)/g, '<span class="fraction"><sup>$1</sup>/<sub>$2</sub></span>');
+    
     let stepsHtml = '';
     if (steps && steps.length) {
-        stepsHtml = `<div style="margin-top:15px;"><strong>📝 Pasos para resolver:</strong><ul>${steps.map(s => `<li>${s}</li>`).join('')}</ul></div>`;
+        stepsHtml = `<div style="margin-top:15px;"><strong>📝 Pasos para resolver:</strong><ul>${steps.map(s => {
+            let step = s;
+            step = step.replace(/√(\d+)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+            step = step.replace(/\^2/g, '²');
+            step = step.replace(/\^3/g, '³');
+            return `<li>${step}</li>`;
+        }).join('')}</ul></div>`;
     }
-    let hintHtml = '';
-    if (hint) {
-        hintHtml = `<div class="hint-box"><strong>💡 Pista:</strong> ${hint}</div>`;
-    }
-    let funFactHtml = '';
-    if (funFact) {
-        funFactHtml = `<div class="funfact-box" style="margin-top:15px; background:#e6f7ff; padding:10px; border-radius:8px;"><strong>🎓 Dato curioso:</strong> ${funFact}</div>`;
-    }
-    div.innerHTML += `
-        <div class="explanation">
-            <strong>🤖 Explicación IA:</strong>
-            <p style="margin-top:10px;">${explanation}</p>
+    
+    div.innerHTML = `
+        <div class="explanation-card">
+            <strong>💡 Explicación:</strong>
+            <p>${formattedExplanation}</p>
             ${stepsHtml}
-            ${hintHtml}
-            ${funFactHtml}
+            ${hint ? `<div class="hint-box"><strong>🎯 Pista:</strong> ${hint}</div>` : ''}
         </div>
     `;
 }

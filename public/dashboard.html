@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Olimpiadas Matemáticas 3D</title>
+    <title>Dashboard - Olimpiadas Matemáticas</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,6 +24,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .logo { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .user-info { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
@@ -38,7 +40,7 @@
             border-radius: 15px;
             padding: 20px;
         }
-        .card h2 { margin-bottom: 20px; color: #667eea; }
+        .card h2 { margin-bottom: 20px; color: #667eea; border-left: 3px solid #667eea; padding-left: 10px; }
         .ranking-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
         .create-section { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .create-section input, .create-section select {
@@ -68,25 +70,207 @@
         .status { font-size: 12px; padding: 4px 8px; border-radius: 12px; background: #48bb78; color: white; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .create-section { flex-direction: column; } }
-        .feature-badge {
-            display: inline-block;
+        
+        /* Carrusel de Premios - Ocupa todo el espacio */
+        .rewards-section {
+            grid-column: span 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .rewards-section h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 20px;
+        }
+        .reward-carousel-card {
+            min-width: calc(33.333% - 14px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .reward-carousel-card:hover {
+            transform: translateY(-10px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+        }
+        .reward-carousel-card.redeemed {
+            opacity: 0.6;
+            filter: grayscale(0.3);
+        }
+        .reward-icon-large {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .reward-name-large {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .reward-points-large {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        .reward-description-large {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 15px;
+        }
+        .reward-value-large {
+            font-size: 16px;
+            color: #48bb78;
+            margin-bottom: 20px;
+        }
+        .reward-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .reward-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #48bb78);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        .redeem-carousel-btn {
+            width: 100%;
+            padding: 12px;
             background: #667eea;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            margin-left: 10px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .redeem-carousel-btn:hover:not(:disabled) {
+            background: #5a67d8;
+            transform: scale(1.02);
+        }
+        .redeem-carousel-btn:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(102,126,234,0.8);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background: #667eea;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+        
+        .dots-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dot.active {
+            background: #667eea;
+            width: 25px;
+            border-radius: 10px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid #667eea;
+        }
+        .redeem-code {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 18px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .copy-btn {
+            background: #48bb78;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1000px) {
+            .reward-carousel-card { min-width: calc(50% - 10px); }
+        }
+        @media (max-width: 700px) {
+            .reward-carousel-card { min-width: calc(100% - 0px); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <nav class="navbar">
-            <div class="logo">🏆 Olimpiadas Matemáticas <span class="feature-badge">3D + Voz IA</span></div>
+            <img src="https://www.usc.edu.co/wp-content/uploads/2026/03/Logo_Universidad-Santiago-de-Cali_.png" style="width: 5rem;" alt="">
             <div class="user-info">
                 <span id="username"></span>
                 <span class="score" id="score">0 pts</span>
                 <span class="level" id="level">Nivel 1</span>
-                <span id="status" class="status">🟢 Conectado</span>
+       
                 <button class="logout" onclick="logout()">Salir</button>
             </div>
         </nav>
@@ -101,7 +285,7 @@
                 <h2>🎮 Crear Sala</h2>
                 <div class="create-section">
                     <input type="text" id="roomName" placeholder="Nombre de la sala">
-                    <select id="categorySelect">
+                    <select id="categorySelect" style="background-color: #1a1a2e;>
                         <option value="">📚 Todas las categorías</option>
                         <option value="matematica_basica">🔢 Matemática Básica</option>
                         <option value="algebra">✖️ Álgebra</option>
@@ -110,27 +294,47 @@
                         <option value="matematica_discreta">🎯 Matemática Discreta</option>
                         <option value="razonamiento_cuantitativo">🧠 Razonamiento Cuantitativo</option>
                     </select>
-                    <select id="maxPlayers">
-                        <option value="2">2 jugadores</option>
-                        <option value="4" selected>4 jugadores</option>
+                    <select id="maxPlayers" style="background-color: #1a1a2e;">
+                        <option value="2" selected>2 jugadores</option>
+                        <option value="4" >4 jugadores</option>
                         <option value="6">6 jugadores</option>
                     </select>
-                    <button onclick="createRoom()">➕ Crear Sala con IA</button>
+                    <button onclick="createRoom()">➕ Crear Sala</button>
                 </div>
                 <h2>🎮 Salas Disponibles</h2>
                 <div id="rooms"></div>
             </div>
-            
-            <div class="card">
-                <h2>📊 Mis Estadísticas</h2>
-                <div id="stats"></div>
-                <div style="margin-top: 20px; padding: 15px; background: rgba(102,126,234,0.3); border-radius: 10px;">
-                    <h3>✨ Nuevas Características</h3>
-                    <p>🎨 <strong>Geometría 3D</strong> - Visualiza figuras en 3D interactivas</p>
-                    <p>🎤 <strong>Asistente de Voz con IA</strong> - Respuestas motivadoras personalizadas</p>
-                    <p>🤖 <strong>Preguntas dinámicas</strong> - Cada respuesta genera una pregunta nueva</p>
-                    <p>📚 <strong>Explicaciones al final</strong> - Resumen completo de aprendizaje</p>
+        </div>
+        
+        <!-- Sección de Premios con Carrusel - Ocupa todo el ancho -->
+        <div class="rewards-section">
+            <h2>🎁 Canjea tus Puntos por Premios Reales 🎁</h2>
+            <div class="carousel-container">
+                <button class="carousel-btn prev" onclick="prevSlide()">❮</button>
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Los premios se cargarán dinámicamente -->
                 </div>
+                <button class="carousel-btn next" onclick="nextSlide()">❯</button>
+            </div>
+            <div class="dots-container" id="dotsContainer"></div>
+            <div style="text-align: center; margin-top: 15px;">
+                <div class="reward-progress" style="max-width: 400px; margin: 0 auto;">
+                    <div class="reward-progress-bar" id="globalProgressBar" style="width: 0%"></div>
+                </div>
+                <p style="font-size: 12px; margin-top: 10px;">💡 Acumula puntos jugando y canjea por premios reales</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="redeemModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-content">
+                <div id="redeemIcon" style="font-size: 60px;"></div>
+                <h2 id="redeemTitle"></h2>
+                <p id="redeemMessage"></p>
+                <div id="redeemCodeDisplay" class="redeem-code"></div>
+                <button class="copy-btn" onclick="copyCode()">📋 Copiar Código</button>
+                <button onclick="closeModal()" style="margin-top: 15px; padding: 8px 20px; background: #667eea; border: none; border-radius: 8px; cursor: pointer;">Cerrar</button>
             </div>
         </div>
     </div>
@@ -138,6 +342,10 @@
     <script>
         let socket = null;
         let user = null;
+        let rewardsList = [];
+        let currentCode = '';
+        let currentSlide = 0;
+        let currentReward = null;
         
         const token = localStorage.getItem('token');
         if (!token) window.location.href = '/';
@@ -147,12 +355,149 @@
             document.getElementById('username').textContent = user.username;
             document.getElementById('score').textContent = user.score + ' pts';
             document.getElementById('level').textContent = 'Nivel ' + user.level;
-            document.getElementById('stats').innerHTML = `
-                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">🎮 Partidas: ${user.gamesPlayed || 0}</div>
-                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">🏆 Puntaje Total: ${user.score || 0}</div>
-                <div style="padding:10px; margin:10px 0; background:rgba(255,255,255,0.1); border-radius:8px;">⭐ Nivel: ${user.level || 1}</div>
-            `;
         } catch(e) { window.location.href = '/'; }
+        
+        async function loadRewards() {
+            try {
+                const res = await fetch('/api/rewards');
+                rewardsList = await res.json();
+                displayCarousel();
+                updateGlobalProgress();
+            } catch(e) { console.error('Error cargando premios:', e); }
+        }
+        
+        function displayCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const redeemedIds = (user.redeemedRewards || []).map(r => r.rewardId);
+            
+            track.innerHTML = rewardsList.map(reward => {
+                const isRedeemed = redeemedIds.includes(reward.id);
+                const progress = Math.min((user.score / reward.pointsRequired) * 100, 100);
+                const canRedeem = user.score >= reward.pointsRequired && !isRedeemed;
+                
+                return `
+                    <div class="reward-carousel-card ${isRedeemed ? 'redeemed' : ''}" data-reward-id="${reward.id}">
+                        ${isRedeemed ? '<div style="position:absolute; top:10px; right:10px; background:#48bb78; padding:4px 8px; border-radius:20px; font-size:12px;">✔ Canjeado</div>' : ''}
+                        <div class="reward-icon-large">${reward.icon}</div>
+                        <div class="reward-name-large">${reward.name}</div>
+                        <div class="reward-points-large">${reward.pointsRequired} pts</div>
+                        <div class="reward-description-large">${reward.description}</div>
+                        <div class="reward-value-large">💰 Valor: ${reward.realValue}</div>
+                        <div class="reward-progress">
+                            <div class="reward-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div style="font-size:12px; margin-bottom:15px;">${user.score}/${reward.pointsRequired} pts</div>
+                        <button class="redeem-carousel-btn" 
+                            onclick="redeemReward(${reward.id})"
+                            ${!canRedeem ? 'disabled' : ''}>
+                            ${canRedeem ? '🎁 Canjear Ahora' : (isRedeemed ? '✓ Ya canjeado' : '🔒 Puntos insuficientes')}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            updateDots();
+            updateCarouselPosition();
+        }
+        
+        function updateGlobalProgress() {
+            const nextReward = rewardsList.find(r => r.pointsRequired > user.score);
+            if (nextReward) {
+                const progress = Math.min((user.score / nextReward.pointsRequired) * 100, 100);
+                document.getElementById('globalProgressBar').style.width = `${progress}%`;
+            } else {
+                document.getElementById('globalProgressBar').style.width = '100%';
+            }
+        }
+        
+        function updateDots() {
+            const container = document.getElementById('dotsContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < rewardsList.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === currentSlide ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                container.appendChild(dot);
+            }
+        }
+        
+        function updateCarouselPosition() {
+            const track = document.getElementById('carouselTrack');
+            const slideWidth = document.querySelector('.reward-carousel-card')?.offsetWidth || 300;
+            const gap = 20;
+            const offset = -(currentSlide * (slideWidth + gap));
+            track.style.transform = `translateX(${offset}px)`;
+        }
+        
+        function nextSlide() {
+            if (currentSlide < rewardsList.length - 1) {
+                currentSlide++;
+                updateDots();
+                updateCarouselPosition();
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateDots();
+                updateCarouselPosition();
+            }
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            updateDots();
+            updateCarouselPosition();
+        }
+        
+        async function redeemReward(rewardId) {
+            const reward = rewardsList.find(r => r.id === rewardId);
+            if (!reward) return;
+            if (user.score < reward.pointsRequired) {
+                showNotification(`❌ Necesitas ${reward.pointsRequired - user.score} puntos más`, 'error');
+                return;
+            }
+            
+            currentReward = reward;
+            
+            try {
+                const res = await fetch('/api/redeem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id, rewardId })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    user.score = data.newScore;
+                    document.getElementById('score').textContent = user.score + ' pts';
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    document.getElementById('redeemIcon').textContent = reward.icon;
+                    document.getElementById('redeemTitle').textContent = reward.name;
+                    document.getElementById('redeemMessage').innerHTML = `🎉 ¡Felicidades! Canjeaste ${reward.name}`;
+                    document.getElementById('redeemCodeDisplay').textContent = data.code;
+                    document.getElementById('redeemModal').style.display = 'flex';
+                    
+                    loadRewards();
+                    showNotification(data.message, 'success');
+                } else {
+                    showNotification(data.error, 'error');
+                }
+            } catch(e) { showNotification('Error al canjear', 'error'); }
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('redeemCodeDisplay').textContent;
+            navigator.clipboard.writeText(code);
+            showNotification('📋 Código copiado al portapapeles', 'success');
+        }
+        
+        function closeModal() {
+            document.getElementById('redeemModal').style.display = 'none';
+        }
+        
+        window.addEventListener('resize', () => updateCarouselPosition());
         
         function connect() {
             socket = io({
@@ -181,7 +526,7 @@
                 container.innerHTML = data.map((u, i) => `
                     <div class="ranking-item">
                         <span>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i+1}</span>
-                        <span>${u.username}</span>
+                        <span>${u.username} ${u.username === user.username ? '(tú)' : ''}</span>
                         <span style="color:#48bb78;">${u.score} pts</span>
                     </div>
                 `).join('');
@@ -217,6 +562,11 @@
                 window.location.href = `/game.html?roomId=${data.roomId}`;
             });
             
+            socket.on('new_reward_available', (data) => {
+                showNotification(`🎁 ¡Nuevo premio disponible! Tienes ${data.userScore} puntos`, 'success');
+                loadRewards();
+            });
+            
             socket.on('error', (data) => showNotification(data.message, 'error'));
         }
         
@@ -227,7 +577,7 @@
                 showNotification('❌ Ingresa un nombre', 'error');
                 return;
             }
-            showNotification('🤖 Generando preguntas con IA...', 'success');
+            showNotification('🤖 Generando preguntas...', 'success');
             socket.emit('create_room', {
                 name: name,
                 maxPlayers: parseInt(document.getElementById('maxPlayers').value),
@@ -245,6 +595,7 @@
             setTimeout(() => div.remove(), 3000);
         }
         
+        loadRewards();
         connect();
     </script>
 </body>

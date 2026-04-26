@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Olimpiadas Matemáticas con IA</title>
+    <title>Login - MathPremiun</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -14,41 +20,101 @@
             justify-content: center;
             align-items: center;
         }
+
         .container {
             background: white;
             border-radius: 20px;
             padding: 40px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        h1 { text-align: center; color: #667eea; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #718096; margin-bottom: 30px; font-size: 14px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
         .tab {
-            flex: 1; padding: 10px; border: none; background: #f0f0f0;
-            cursor: pointer; border-radius: 10px; font-size: 16px;
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 16px;
             transition: all 0.3s;
         }
-        .tab.active { background: #667eea; color: white; }
-        .form { display: none; }
-        .form.active { display: block; }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
         input {
-            width: 100%; padding: 12px; margin: 10px 0;
-            border: 1px solid #ddd; border-radius: 8px; font-size: 16px;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
         }
+
         button {
-            width: 100%; padding: 12px; background: #667eea;
-            color: white; border: none; border-radius: 8px;
-            font-size: 16px; cursor: pointer; margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        button:hover { background: #5a67d8; }
-        .error { color: #e53e3e; margin-top: 10px; text-align: center; font-size: 14px; }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .error {
+            color: #e53e3e;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
         .demo {
-            margin-top: 20px; padding: 15px; background: #f7fafc;
-            border-radius: 10px; text-align: center; font-size: 14px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
             color: #718096;
         }
+
         .ai-badge {
             background: #ed8936;
             color: white;
@@ -61,22 +127,25 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>🏆 Olimpiadas Matemáticas <span class="ai-badge">IA</span></h1>
-        <div class="subtitle">Preguntas generadas con Gemini AI</div>
+
+        <img style="justify-content: center; align-content: center;"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXQ5sfBiHMXQDo6X9i6re9tEP0jrkD9Wgbig&s" alt="">
+
         <div class="tabs">
             <button class="tab active" onclick="showTab('login')">Iniciar Sesión</button>
             <button class="tab" onclick="showTab('register')">Registrarse</button>
         </div>
-        
+
         <div id="loginForm" class="form active">
             <input type="text" id="loginUser" placeholder="Usuario">
             <input type="password" id="loginPass" placeholder="Contraseña">
             <button onclick="login()">Ingresar</button>
             <div id="loginError" class="error"></div>
         </div>
-        
+
         <div id="registerForm" class="form">
             <input type="text" id="regUser" placeholder="Usuario">
             <input type="password" id="regPass" placeholder="Contraseña">
@@ -84,11 +153,17 @@
             <button onclick="register()">Registrarse</button>
             <div id="regError" class="error"></div>
         </div>
-        
-        <div class="demo">
-            🤖 <strong>Usuarios de prueba:</strong><br>
-            📝 demo / demo123<br>
-            📝 test / test123
+
+        <div class="demo" ">
+            🤖 <strong>Creditos</strong><br>
+            <ul style="list-style: none;">
+                <li>Juan Jose Alvarez</li>
+                <li>Andres Mosquera</li>
+                <li>Brenda  Sofia</li>
+                <li>Juan Camilo </li>
+                <li>Marcos</li>
+            </ul>
+
         </div>
     </div>
 
@@ -109,12 +184,12 @@
             const username = document.getElementById('loginUser').value.trim();
             const password = document.getElementById('loginPass').value;
             const errorDiv = document.getElementById('loginError');
-            
+
             if (!username || !password) {
                 errorDiv.textContent = '❌ Complete todos los campos';
                 return;
             }
-            
+
             try {
                 const res = await fetch('/api/login', {
                     method: 'POST',
@@ -129,7 +204,7 @@
                 } else {
                     errorDiv.textContent = '❌ ' + data.error;
                 }
-            } catch(e) {
+            } catch (e) {
                 errorDiv.textContent = '❌ Error de conexión';
             }
         }
@@ -139,7 +214,7 @@
             const password = document.getElementById('regPass').value;
             const confirm = document.getElementById('regConfirm').value;
             const errorDiv = document.getElementById('regError');
-            
+
             if (!username || !password) {
                 errorDiv.textContent = '❌ Complete todos los campos';
                 return;
@@ -152,7 +227,7 @@
                 errorDiv.textContent = '❌ Mínimo 4 caracteres';
                 return;
             }
-            
+
             try {
                 const res = await fetch('/api/register', {
                     method: 'POST',
@@ -167,10 +242,11 @@
                 } else {
                     errorDiv.textContent = '❌ ' + data.error;
                 }
-            } catch(e) {
+            } catch (e) {
                 errorDiv.textContent = '❌ Error de conexión';
             }
         }
     </script>
 </body>
+
 </html>

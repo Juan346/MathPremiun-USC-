@@ -724,3 +724,366 @@ body {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
 }
+/* Estilos para notación matemática */
+.math-expression {
+    font-family: 'Segoe UI', 'Times New Roman', serif;
+    font-size: 1.1em;
+}
+
+.sqrt {
+    display: inline-block;
+    position: relative;
+    font-size: 1.2em;
+}
+
+.sqrt:before {
+    content: "√";
+    font-size: 1.2em;
+    margin-right: 2px;
+}
+
+.sqrt-inner {
+    display: inline-block;
+    border-top: 1px solid currentColor;
+    padding: 0 2px;
+}
+
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.fraction sup {
+    font-size: 0.8em;
+    border-bottom: 1px solid currentColor;
+    padding: 0 2px;
+}
+
+.fraction sub {
+    font-size: 0.8em;
+    padding: 0 2px;
+}
+
+sup, sub {
+    font-size: 0.75em;
+    line-height: 1;
+}
+
+/* Opciones con mejor espaciado para símbolos */
+.option {
+    font-family: monospace;
+    font-size: 16px;
+}
+
+.question-text {
+    font-family: 'Segoe UI', 'Times New Roman', serif;
+    line-height: 1.6;
+}
+/* Estilos para que la raíz cuadrada se vea bien */
+.sqrt {
+    display: inline-block;
+    position: relative;
+    font-size: 1.2em;
+}
+
+.sqrt-inner {
+    display: inline-block;
+    border-top: 1px solid currentColor;
+    padding: 0 2px;
+}
+
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.fraction sup {
+    font-size: 0.7em;
+    border-bottom: 1px solid currentColor;
+    padding: 0 2px;
+}
+
+.fraction sub {
+    font-size: 0.7em;
+    padding: 0 2px;
+}
+
+/* Asegurar que las opciones muestren el HTML correctamente */
+.option-btn {
+    padding: 15px;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.question-content {
+    font-size: 24px;
+    margin: 20px 0;
+    line-height: 1.5;
+}
+/* Estilos para selects personalizados - VERSIÓN CORREGIDA */
+.styled-select {
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.styled-select:hover {
+    background: #4a5568;
+    border-color: #667eea;
+}
+
+.styled-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.styled-select option {
+    background: #1a202c;
+    color: #ffffff;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.styled-select option:hover {
+    background: #667eea;
+}
+
+.styled-select option:checked {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}/* Estilos para inputs */
+.styled-input {
+    background: #2d3748;
+    border: 1px solid #4a5568;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.styled-input::placeholder {
+    color: #a0aec0;
+}
+
+.styled-input:hover {
+    background: #4a5568;
+    border-color: #667eea;
+}
+
+.styled-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+/* ============ NOTACIÓN MATEMÁTICA COMPLETA ============ */
+
+/* Fracciones normales */
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin: 0 3px;
+    font-size: 1em;
+}
+
+.fraction sup {
+    font-size: 0.7em;
+    border-bottom: 1px solid currentColor;
+    padding: 0 4px;
+    line-height: 1.2;
+}
+
+.fraction sub {
+    font-size: 0.7em;
+    padding: 0 4px;
+    line-height: 1.2;
+}
+
+/* Fracciones negativas */
+.fraction-negative {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #f56565;
+}
+
+.fraction-negative .fraction sup,
+.fraction-negative .fraction sub {
+    color: inherit;
+}
+
+/* Números negativos */
+.negative-number {
+    color: #f56565;
+    font-weight: 600;
+}
+
+/* Raíz cuadrada */
+.sqrt {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    font-size: 1.15em;
+    margin: 0 2px;
+}
+
+.sqrt-inner {
+    display: inline-block;
+    border-top: 1px solid currentColor;
+    padding: 0 4px;
+    margin-left: 2px;
+}
+
+/* Raíz cúbica */
+.cbrt {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    font-size: 1.15em;
+}
+
+.cbrt-inner {
+    display: inline-block;
+    border-top: 1px solid currentColor;
+    padding: 0 4px;
+    margin-left: 2px;
+}
+
+/* Raíz cuarta */
+.root-4 {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.15em;
+}
+
+.root-inner {
+    display: inline-block;
+    border-top: 1px solid currentColor;
+    padding: 0 4px;
+    margin-left: 2px;
+}
+
+/* Raíz n-ésima */
+.root-n {
+    display: inline-flex;
+    align-items: baseline;
+    font-size: 1.1em;
+}
+
+.root-n sup {
+    font-size: 0.65em;
+    margin-right: 2px;
+}
+
+/* Potencias y exponentes */
+sup, sub {
+    font-size: 0.7em;
+    line-height: 1;
+    vertical-align: baseline;
+}
+
+sup {
+    vertical-align: super;
+}
+
+sub {
+    vertical-align: sub;
+}
+
+/* Derivadas */
+.derivative {
+    font-family: monospace;
+    font-size: 1.1em;
+    background: rgba(102, 126, 234, 0.2);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+/* Integrales */
+.integral {
+    font-size: 1.4em;
+    font-family: serif;
+    margin: 0 3px;
+}
+
+/* Sumatorias y productorias */
+.sum, .product {
+    font-size: 1.3em;
+    font-family: serif;
+    margin: 0 3px;
+}
+
+/* Símbolos */
+.symbol {
+    font-size: 1.1em;
+    margin: 0 2px;
+    font-weight: 500;
+}
+
+/* Unidades */
+.unit {
+    font-size: 0.85em;
+    color: #a0aec0;
+    margin-left: 2px;
+}
+
+/* Corchetes y llaves */
+.bracket, .brace {
+    font-size: 1.05em;
+    font-weight: 500;
+}
+
+/* Efectos hover */
+.fraction:hover,
+.sqrt:hover,
+.cbrt:hover,
+.fraction-negative:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+    cursor: help;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .fraction sup,
+    .fraction sub {
+        font-size: 0.6em;
+        padding: 0 2px;
+    }
+    
+    .sqrt, .cbrt, .root-4 {
+        font-size: 1em;
+    }
+    
+    .integral, .sum, .product {
+        font-size: 1.2em;
+    }
+}

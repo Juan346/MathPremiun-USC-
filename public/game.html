@@ -81,7 +81,7 @@
         .start-btn { background: #667eea; color: white; }
         .start-btn:disabled { background: #ccc; cursor: not-allowed; }
         
-        .question-text { font-size: 24px; margin: 20px 0; }
+        .question-text { font-size: 24px; margin: 20px 0; line-height: 1.5; }
         .options { display: grid; gap: 15px; margin-top: 20px; }
         .option {
             padding: 15px; background: rgba(255,255,255,0.2);
@@ -218,6 +218,51 @@
             transition: all 0.3s;
         }
         .voice-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+        
+        /* Estilos para notación matemática */
+        .sqrt {
+            display: inline-block;
+            position: relative;
+            font-size: 1.2em;
+        }
+        .sqrt-inner {
+            display: inline-block;
+            border-top: 1px solid currentColor;
+            padding: 0 2px;
+        }
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .fraction sup {
+            font-size: 0.7em;
+            border-bottom: 1px solid currentColor;
+            padding: 0 2px;
+        }
+        .fraction sub {
+            font-size: 0.7em;
+            padding: 0 2px;
+        }
+        sup, sub {
+            font-size: 0.75em;
+            line-height: 1;
+        }
+        .category-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        .question-content {
+            font-size: 24px;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -299,7 +344,6 @@
             controls.autoRotateSpeed = 2;
             controls.enableZoom = true;
             
-            // Luces
             const ambientLight = new THREE.AmbientLight(0x404040);
             scene.add(ambientLight);
             const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -310,7 +354,6 @@
             backLight.position.set(-2, 1, -3);
             scene.add(backLight);
             
-            // Grid helper
             const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
             scene.add(gridHelper);
             
@@ -384,7 +427,6 @@
             if (model) {
                 scene.add(model);
                 currentModel = model;
-                // Ajustar cámara
                 camera.position.set(4, 3, 5);
                 controls.target.set(0, 0, 0);
             }
@@ -404,7 +446,7 @@
         let gameActive = false;
         let isReady = false;
         let gameResults = null;
-        let speechSynthesisEnabled = false;
+        let speechSynthesisEnabled = true;
         
         const token = localStorage.getItem('token');
         if (!token) window.location.href = '/';
@@ -416,6 +458,48 @@
         function getRoomId() {
             return new URLSearchParams(window.location.search).get('roomId');
         }
+        
+        // Función para formatear notación matemática a HTML
+        // Función para formatear notación matemática a HTML
+function formatMathToHTML(text) {
+    if (!text) return '';
+    
+    let formatted = text;
+    
+    // Proteger HTML existente
+    let protectedHtml = [];
+    let counter = 0;
+    formatted = formatted.replace(/<[^>]+>/g, (match) => {
+        const placeholder = `__HTML_PROTECT_${counter}__`;
+        protectedHtml.push({ placeholder, html: match });
+        counter++;
+        return placeholder;
+    });
+    
+    // Formatear raíces cuadradas
+    formatted = formatted.replace(/√\(?(\d+)\)?/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+    formatted = formatted.replace(/√\(?([a-zA-Z])\)?/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+    
+    // Formatear potencias
+    formatted = formatted.replace(/\^2/g, '²');
+    formatted = formatted.replace(/\^3/g, '³');
+    formatted = formatted.replace(/\^4/g, '⁴');
+    formatted = formatted.replace(/([a-zA-Z0-9])\^2/g, '$1²');
+    formatted = formatted.replace(/([a-zA-Z0-9])\^3/g, '$1³');
+    
+    // Formatear multiplicación
+    formatted = formatted.replace(/\*/g, '×');
+    
+    // Formatear fracciones
+    formatted = formatted.replace(/(\d+)\/(\d+)/g, '<span class="fraction"><sup>$1</sup>/<sub>$2</sub></span>');
+    
+    // Restaurar HTML protegido
+    protectedHtml.forEach(({ placeholder, html }) => {
+        formatted = formatted.replace(placeholder, html);
+    });
+    
+    return formatted;
+}
         
         function speak(text) {
             if (!speechSynthesisEnabled) return;
@@ -497,7 +581,6 @@
                 document.getElementById('questionCounter').textContent = `Pregunta ${data.questionNumber}/${data.totalQuestions}`;
                 document.getElementById('feedbackArea').innerHTML = '';
                 
-                // Mostrar figura 3D si es geometría
                 if (data.question.geometry3D && window.display3DFigure) {
                     setTimeout(() => window.display3DFigure(data.question.geometry3D), 100);
                 }
@@ -528,7 +611,7 @@
             const container = document.getElementById('playersList');
             container.innerHTML = players.map((p, i) => `
                 <div class="player ${readyPlayers.includes(p.id) ? 'ready' : ''} ${i === 0 ? 'host' : ''}">
-                    <span>${i === 0 ? '👑' : '👤'} ${p.username}</span>
+                    <span>${i === 0 ? '👑' : '👤'} ${escapeHtml(p.username)}</span>
                     <span>${readyPlayers.includes(p.id) ? '<span class="badge">✓ Listo</span>' : '<span class="badge" style="background:#ccc;">⌛</span>'} ${p.score} pts</span>
                 </div>
             `).join('');
@@ -538,7 +621,7 @@
             const container = document.getElementById('playersList');
             container.innerHTML = scores.map((p, i) => `
                 <div class="player ${i === 0 ? 'host' : ''}">
-                    <span>${i === 0 ? '👑' : '👤'} ${p.username}</span>
+                    <span>${i === 0 ? '👑' : '👤'} ${escapeHtml(p.username)}</span>
                     <span style="color:#48bb78;">${p.score} pts</span>
                 </div>
             `).join('');
@@ -571,22 +654,65 @@
                 <div id="feedbackArea"></div>
                 <div id="voice-assistant-container"></div>
             `;
-            // Inicializar 3D después de agregar el canvas
             setTimeout(() => {
                 if (typeof init3D === 'function') window.init3D = init3D;
                 if (window.init3D) window.init3D();
             }, 100);
         }
         
+        // Función principal para mostrar la pregunta con formato matemático
         function displayQuestion(data) {
             const q = data.question;
-            document.getElementById('questionText').innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div>`;
+            const questionTextDiv = document.getElementById('questionText');
+            
+            // Obtener nombre de categoría
+            function getCategoryName(category) {
+                const categories = {
+                    'matematica_basica': 'Matemática Básica',
+                    'algebra': 'Álgebra',
+                    'geometria': 'Geometría 3D',
+                    'calculo': 'Cálculo',
+                    'matematica_discreta': 'Matemática Discreta',
+                    'razonamiento_cuantitativo': 'Razonamiento Cuantitativo'
+                };
+                return categories[category] || 'Matemáticas';
+            }
+            
+            function getTypeIcon(type) {
+                const icons = {
+                    'suma': '➕', 'resta': '➖', 'multiplicacion': '✖️', 'division': '➗',
+                    'fraccion': '🔢', 'porcentaje': '%', 'derivada': '📈', 'integral': '∫',
+                    'conjuntos': '🎯', 'combinatoria': '🃏', 'ecuacion': '✖️', 'problema': '🧠',
+                    'completar': '📝', 'puzzle': '🧩', 'geometria': '📐'
+                };
+                return icons[type] || '📝';
+            }
+            
+            const categoryBadge = `
+                <div class="category-badge">
+                    📚 ${q.categoryName || getCategoryName(q.category)} | 
+                    ${getTypeIcon(q.type)} ${q.type || 'matemáticas'}
+                </div>
+            `;
+            
+            // Formatear el texto de la pregunta
+            const formattedQuestionText = formatMathToHTML(q.text);
+            
+            questionTextDiv.innerHTML = `
+                ${categoryBadge}
+                <div class="question-content">${formattedQuestionText}</div>
+            `;
             
             const optionsDiv = document.getElementById('optionsArea');
             if (q.options && q.options.length) {
-                optionsDiv.innerHTML = q.options.map(opt => `
-                    <button class="option" onclick="submitAnswer('${escapeHtml(opt).replace(/'/g, "\\'")}')">${escapeHtml(opt)}</button>
-                `).join('');
+                optionsDiv.innerHTML = q.options.map(opt => {
+                    const formattedOpt = formatMathToHTML(opt);
+                    return `
+                        <button class="option" onclick="submitAnswer('${escapeHtml(opt).replace(/'/g, "\\'")}')">
+                            ${formattedOpt}
+                        </button>
+                    `;
+                }).join('');
             } else {
                 optionsDiv.innerHTML = `
                     <input type="text" id="textAnswer" class="text-answer" placeholder="Escribe tu respuesta...">
@@ -604,7 +730,6 @@
             }
             if (!userAnswer && userAnswer !== 0) return;
             
-            // Solicitar asistente de voz
             socket.emit('request_voice_assistance', {
                 roomId,
                 question: currentQuestion.text,
@@ -674,16 +799,18 @@
             
             let learningHtml = '<h4 style="margin-top:20px;">📚 Resumen de Aprendizaje</h4>';
             userAnswers.forEach((ans, idx) => {
+                const formattedQuestion = formatMathToHTML(ans.question);
+                const formattedExplanation = formatMathToHTML(ans.explanation);
                 learningHtml += `
                     <div class="explanation-item ${ans.isCorrect ? '' : 'wrong-answer'}">
-                        <div><strong>Pregunta ${idx + 1}:</strong> ${escapeHtml(ans.question)}</div>
+                        <div><strong>Pregunta ${idx + 1}:</strong> ${formattedQuestion}</div>
                         <div><strong>Tu respuesta:</strong> ${escapeHtml(ans.userAnswer)}</div>
                         <div><strong>Respuesta correcta:</strong> ${escapeHtml(ans.correctAnswer)}</div>
                         <div><strong>Resultado:</strong> ${ans.isCorrect ? '✅ Correcta' : '❌ Incorrecta'}</div>
                         <details>
                             <summary>📖 Ver explicación</summary>
                             <div style="margin-top:10px;">
-                                <p>${escapeHtml(ans.explanation)}</p>
+                                <p>${formattedExplanation}</p>
                                 ${ans.steps ? `<div><strong>Pasos:</strong><ul>${ans.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul></div>` : ''}
                                 ${ans.hint ? `<div><strong>💡 Pista:</strong> ${escapeHtml(ans.hint)}</div>` : ''}
                             </div>
@@ -731,8 +858,6 @@
         
         function returnHome() { window.location.href = '/dashboard.html'; }
         
-        // Habilitar voz
-        speechSynthesisEnabled = true;
         connect();
     </script>
 </body>
