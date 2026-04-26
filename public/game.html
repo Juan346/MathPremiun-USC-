@@ -804,15 +804,15 @@ function formatMathToHTML(text) {
                 learningHtml += `
                     <div class="explanation-item ${ans.isCorrect ? '' : 'wrong-answer'}">
                         <div><strong>Pregunta ${idx + 1}:</strong> ${formattedQuestion}</div>
-                        <div><strong>Tu respuesta:</strong> ${escapeHtml(ans.userAnswer)}</div>
-                        <div><strong>Respuesta correcta:</strong> ${escapeHtml(ans.correctAnswer)}</div>
+                        <div><strong>Tu respuesta:</strong> ${ans.userAnswer}</div>
+                        <div><strong>Respuesta correcta:</strong> ${ans.correctAnswer}</div>
                         <div><strong>Resultado:</strong> ${ans.isCorrect ? '✅ Correcta' : '❌ Incorrecta'}</div>
                         <details>
                             <summary>📖 Ver explicación</summary>
                             <div style="margin-top:10px;">
                                 <p>${formattedExplanation}</p>
-                                ${ans.steps ? `<div><strong>Pasos:</strong><ul>${ans.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul></div>` : ''}
-                                ${ans.hint ? `<div><strong>💡 Pista:</strong> ${escapeHtml(ans.hint)}</div>` : ''}
+                                ${ans.steps ? `<div><strong>Pasos:</strong><ul>${ans.steps.map(s => `<li>${s}</li>`).join('')}</ul></div>` : ''}
+                                ${ans.hint ? `<div><strong>💡 Pista:</strong> ${ans.hint}</div>` : ''}
                             </div>
                         </details>
                     </div>

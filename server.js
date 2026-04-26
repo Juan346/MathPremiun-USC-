@@ -83,6 +83,7 @@ const redeemedRewards = new Map();
 // ============ FUNCIÓN PARA FORMATEAR NOTACIÓN MATEMÁTICA ============
 // ============ FUNCIÓN CORREGIDA PARA FRACCIONES NEGATIVAS ============
 // ============ FUNCIÓN CON NUEVO FORMATO DE FRACCIONES ============
+// ============ FUNCIÓN ACTUALIZADA ============
 function formatMathNotation(text) {
   if (!text) return '';
   
@@ -99,43 +100,46 @@ function formatMathNotation(text) {
     return placeholder;
   });
   
-  // ============ NUEVO FORMATO DE FRACCIONES (estilo grande) ============
+  // ============ 1. CONVERTIR LaTeX A FRACCIONES HTML ============
+  // \frac{11}{4} → fracción HTML
+  formatted = formatted.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, 
+    '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
   
-  // Fracciones con paréntesis: (1/2) → formato grande
-  formatted = formatted.replace(/\((\d+)\/(\d+)\)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/\(([a-zA-Z])\/(\d+)\)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/\((\d+)\/([a-zA-Z])\)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/\(([a-zA-Z])\/([a-zA-Z])\)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
+  // \frac{11}{4} con números negativos
+  formatted = formatted.replace(/\\frac\{-([^{}]+)\}\{([^{}]+)\}/g, 
+    '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
   
-  // Fracciones negativas con paréntesis: (-1/2)
-  formatted = formatted.replace(/\(-(\d+)\/(\d+)\)/g, '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
+  // ============ 2. FRACCIONES CON PARÉNTESIS ============
+  formatted = formatted.replace(/\((\d+)\/(\d+)\)/g, 
+    '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
   
-  // Fracciones normales sin paréntesis: 1/2
-  formatted = formatted.replace(/(\d+)\/(\d+)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/([a-zA-Z])\/(\d+)/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/(\d+)\/([a-zA-Z])/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
-  formatted = formatted.replace(/([a-zA-Z])\/([a-zA-Z])/g, '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
+  formatted = formatted.replace(/\(-(\d+)\/(\d+)\)/g, 
+    '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
   
-  // Fracciones normales negativas: -1/2
-  formatted = formatted.replace(/-(\d+)\/(\d+)/g, '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
-  formatted = formatted.replace(/-([a-zA-Z])\/(\d+)/g, '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
-  formatted = formatted.replace(/-(\d+)\/([a-zA-Z])/g, '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
-  formatted = formatted.replace(/-([a-zA-Z])\/([a-zA-Z])/g, '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
+  // ============ 3. FRACCIONES NORMALES ============
+  formatted = formatted.replace(/(\d+)\/(\d+)/g, 
+    '<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
   
-  // ============ RAÍCES ============
-  formatted = formatted.replace(/√(\d+)/g, '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
-  formatted = formatted.replace(/√\(([^)]+)\)/g, '<span class="sqrt">√<span class="sqrt-inner">($1)</span></span>');
+  formatted = formatted.replace(/-(\d+)\/(\d+)/g, 
+    '<span class="fraction-large-negative">-<span class="fraction-large"><span class="numerator">$1</span><span class="denominator">$2</span></span></span>');
   
-  // ============ POTENCIAS ============
+  // ============ 4. RAÍCES ============
+  formatted = formatted.replace(/√(\d+)/g, 
+    '<span class="sqrt">√<span class="sqrt-inner">$1</span></span>');
+  
+  formatted = formatted.replace(/√\(([^)]+)\)/g, 
+    '<span class="sqrt">√<span class="sqrt-inner">($1)</span></span>');
+  
+  // ============ 5. POTENCIAS ============
   formatted = formatted.replace(/([a-zA-Z0-9])\^(\d+)/g, '$1<sup>$2</sup>');
   formatted = formatted.replace(/([a-zA-Z0-9])\^-(\d+)/g, '$1<sup>-$2</sup>');
   
-  // ============ SÍMBOLOS ============
+  // ============ 6. SÍMBOLOS ============
   formatted = formatted.replace(/\*/g, '×');
-  formatted = formatted.replace(/÷/g, '÷');
   formatted = formatted.replace(/π/g, '<span class="symbol">π</span>');
+  formatted = formatted.replace(/∞/g, '<span class="symbol">∞</span>');
   
-  // ============ NÚMEROS NEGATIVOS ============
+  // ============ 7. NÚMEROS NEGATIVOS ============
   formatted = formatted.replace(/-(\d+(?:\.\d+)?)(?![\/\d])/g, '<span class="negative-number">-$1</span>');
   
   // Restaurar HTML protegido

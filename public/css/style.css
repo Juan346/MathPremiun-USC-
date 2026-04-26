@@ -1087,3 +1087,60 @@ sub {
         font-size: 1.2em;
     }
 }
+/* Fracciones grandes */
+.fraction-large {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 4px;
+    font-size: 1em;
+    vertical-align: middle;
+}
+
+.fraction-large .numerator {
+    font-size: 0.85em;
+    border-bottom: 2px solid currentColor;
+    padding: 0 6px 4px 6px;
+    font-weight: 600;
+}
+
+.fraction-large .denominator {
+    font-size: 0.85em;
+    padding: 4px 6px 0 6px;
+    font-weight: 600;
+}
+
+/* Fracciones negativas */
+.fraction-large-negative {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: #f56565;
+}
+
+.fraction-large-negative .fraction-large .numerator,
+.fraction-large-negative .fraction-large .denominator {
+    color: #f56565;
+}
+
+/* Raíz cuadrada */
+.sqrt {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.15em;
+}
+
+.sqrt-inner {
+    display: inline-block;
+    border-top: 1.5px solid currentColor;
+    padding: 0 4px;
+    margin-left: 2px;
+}
+
+/* Números negativos */
+.negative-number {
+    color: #f56565;
+    font-weight: 600;
+}
